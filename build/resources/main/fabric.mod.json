@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "pipphone",
+  "version": "1.0.0",
+  "name": "PIPphone",
+  "description": "In-game phone HUD and app menu integrated with CarLib for Minecraft 1.21.1.",
+  "authors": ["PIPphone"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.pipphone.mod.PipphoneMod"
+    ],
+    "client": [
+      "com.pipphone.client.PipphoneClientMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.14",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "carlib": "*"
+  }
+}

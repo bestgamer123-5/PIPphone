@@ -1,96 +1,85 @@
 # PIPphone (Minecraft 1.21.1 Fabric Mod)
 
-This repository is now configured as a **Minecraft 1.21.1 Fabric mod** project, instead of a standalone Swing app.
+In-game phone HUD and app menu integrated with **CarLib** for Minecraft 1.21.1.
+
+## Requirements
+
+- **CarLib** — sibling project at `../CarLib` (included in Gradle settings)
+- **Fabric Loader** `0.16.14`, **Fabric API**, **Java 21**
 
 ## Versions
 
-- Minecraft: `1.21.1`
-- Yarn mappings: `1.21.1+build.3`
-- Fabric Loader: `0.16.14`
-- Fabric API: `0.116.12+1.21.1`
+| Component | Version |
+|-----------|---------|
+| Minecraft | `1.21.1` |
+| Yarn | `1.21.1+build.3` |
+| Fabric Loader | `0.16.14` |
+| Fabric Loom | `1.8.13` |
+| Fabric API | `0.116.12+1.21.1` |
 
-## CarLib integration
+## Build and run
 
-The project keeps CarLib as a dependency:
-
-```gradle
-modImplementation 'com.github.bestgamer123-5:CarLib:main-SNAPSHOT'
-```
-
-This allows implementing `HudOverlay`, `MenuScreenDefinition`, `ButtonElement`, `ProgressBarElement`, `RpgInterfaceDefinition`, and `UiApi` registration inside a proper 1.21.1 mod runtime.
-
-## Build / Run
+Build CarLib first (Gradle composite project):
 
 ```bash
+cd ../CarLib && ./gradlew build
+cd ../PIPphone
 ./gradlew build
 ./gradlew runClient
 ```
 
-## Entry point
+## In-game usage
 
-Main mod initializer:
-- `com.pipphone.mod.PipphoneMod`
+| Action | Result |
+|--------|--------|
+| HUD (top-right) | Time, speed, gear, engine, fuel, battery |
+| **P** key | Opens PIPphone app menu |
+| App buttons | Chat message confirming the app (placeholder) |
 
-## CarLib status recheck (May 25, 2026)
+Telemetry is resolved in this order:
 
-Rechecked upstream: CarLib now targets **Minecraft 1.21.1** on `main` with:
-- `minecraft_version=1.21.1`
-- `yarn_mappings=1.21.1+build.3`
-- `loader_version=0.16.14`
-- `fabric_version=0.116.12+1.21.1`
+1. Other mods’ `CarLibApi` providers exposing the `telemetry` feature
+2. Reflection on the vehicle you are riding (`getSpeedKmh`, etc.)
+3. Player movement fallback when driving/riding
 
-`carlib_ref` remains configurable for pinning to commit/tag if needed.
-# PIPphone (CarLib HUD + App Phone UI)
+## CarLib integration
 
-A Java phone-style GUI/HUD that consumes telemetry from `CarLib` and also includes app buttons (Navigation, Radio, Camera, Messages, Garage, Weather, Calls, Settings).
+On startup, **PIPphone** registers:
 
-## Why this design
+- `CarLibApi.registerProvider(PipphoneCarProvider)` — telemetry feature for other mods
+- `UiApi.registerHudOverlay(PipphoneHudOverlay)` — phone HUD contract
+- `UiApi.registerMenu(...)` — app menu definition (buttons + progress elements)
 
-CarLib is a general-purpose Fabric interoperability library (not only for cars). This project reflects that by combining:
-- a vehicle HUD panel (speed/gear/engine/fuel/battery), and
-- a phone app launcher surface (GUI/UI app grid).
+Rendering is done by PIPphone (CarLib stores registrations; it does not draw the HUD itself).
 
-## CarLib dependency
+## Entry points
 
-```gradle
-implementation 'com.github.bestgamer123-5:CarLib:main-SNAPSHOT'
-```
+| Side | Class |
+|------|--------|
+| Common | `com.pipphone.mod.PipphoneMod` |
+| Client | `com.pipphone.client.PipphoneClientMod` |
 
-## Run
+## Optional desktop demo
 
 ```bash
-javac $(find src/main/java -name '*.java')
-java -cp src/main/java com.pipphone.Main
+./gradlew build
+java -cp "build/devlibs/pipphone-1.0.0-dev.jar:../CarLib/build/devlibs/carlib-0.1.0-dev.jar" com.pipphone.Main
 ```
 
-## Integrate a real CarLib object
+## Project layout
 
-Pass your runtime CarLib-backed object to:
-
-```java
-new ReflectionCarLibTelemetryProvider(carLibVehicleInstance)
+```
+src/main/java/com/pipphone/
+  mod/          Fabric common init
+  client/       HUD, screen, keybind, CarLib UI registration
+  phone/        Controller, telemetry, apps
+  integration/  PipphoneCarProvider
 ```
 
-Expected methods (if present):
-- `getSpeedKmh()`
-- `getFuelPercent()`
-- `getBatteryPercent()`
-- `getGear()`
-- `isEngineOn()`
+## Local CarLib vs JitPack
 
+Gradle uses the **local** CarLib project (`settings.gradle` includes `../CarLib`). To use JitPack instead, remove the `include 'carlib'` block and set:
 
-## CarLib UI API bridge support
-
-This project now includes a reflection bridge for CarLib UI entities often used in mods:
-- `HudOverlay`
-- `MenuScreenDefinition`
-- `ButtonElement`
-- `ProgressBarElement`
-- `RpgInterfaceDefinition`
-- `UiApi` (register overlay/menu/RPG interfaces)
-
-`CarLibUiBridge` now mirrors the current CarLib package (`com.carlib.api.ui`) and registers:
-- `UiApi.registerHudOverlay(HudOverlay)`
-- `UiApi.registerMenu(MenuScreenDefinition)`
-
-It also constructs `RpgInterfaceDefinition` for compatibility with RPG-style UI bundles in CarLib-based integrations.
+```gradle
+modImplementation "com.github.bestgamer123-5:CarLib:${carlib_ref}"
+```

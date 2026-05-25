@@ -10,14 +10,13 @@ base {
     archivesName = project.archives_base_name
 }
 
-repositories {
-    maven { url 'https://maven.fabricmc.net/' }
-    id 'java'
-    id 'application'
+loom {
+    mods {
+        pipphone {
+            sourceSet sourceSets.main
+        }
+    }
 }
-
-group = 'com.pipphone'
-version = '1.0.0'
 
 repositories {
     mavenCentral()
@@ -29,28 +28,25 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-    modImplementation "com.github.bestgamer123-5:CarLib:${project.carlib_ref}"
-    implementation 'com.github.bestgamer123-5:CarLib:main-SNAPSHOT'
-}
-
-application {
-    mainClass = 'com.pipphone.Main'
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-    withSourcesJar()
+    modImplementation project(path: ':carlib', configuration: 'namedElements')
 }
 
 processResources {
     inputs.property 'version', project.version
+
     filesMatching('fabric.mod.json') {
         expand version: project.version,
                 minecraft_version: project.minecraft_version,
                 loader_version: project.loader_version
-        languageVersion = JavaLanguageVersion.of(17)
     }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 21
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }

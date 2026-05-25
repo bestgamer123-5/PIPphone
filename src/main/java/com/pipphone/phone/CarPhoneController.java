@@ -8,11 +8,19 @@ public class CarPhoneController {
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
     private final CarTelemetryProvider telemetry;
-    private final List<PhoneApp> apps;
+    private List<PhoneApp> apps;
 
     public CarPhoneController(CarTelemetryProvider telemetry) {
         this.telemetry = telemetry;
-        this.apps = List.of(
+        this.apps = defaultApps();
+    }
+
+    public void setApps(List<PhoneApp> apps) {
+        this.apps = List.copyOf(apps);
+    }
+
+    private static List<PhoneApp> defaultApps() {
+        return List.of(
                 new PhoneApp("Navigation", "🧭", () -> {}),
                 new PhoneApp("Radio", "📻", () -> {}),
                 new PhoneApp("Camera", "📷", () -> {}),
@@ -23,6 +31,7 @@ public class CarPhoneController {
                 new PhoneApp("Settings", "⚙️", () -> {})
         );
     }
+
 
     public String time() { return LocalTime.now().format(TIME_FORMAT); }
     public double rawSpeed() { return telemetry.speedKmh(); }

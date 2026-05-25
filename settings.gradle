@@ -6,5 +6,7 @@ pluginManagement {
     }
 }
 
+include 'carlib'
+project(':carlib').projectDir = file('../CarLib')
+
 rootProject.name = 'pipphone'
-rootProject.name = 'PIPphone'

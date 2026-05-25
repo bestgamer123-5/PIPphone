@@ -1,33 +1,24 @@
 package com.pipphone;
 
+import com.pipphone.integration.PipphoneCarProvider;
 import com.pipphone.phone.CarPhoneController;
+import com.pipphone.phone.CarTelemetryAggregator;
 import com.pipphone.phone.CarPhoneHud;
-import com.pipphone.phone.CarTelemetryProvider;
-import com.pipphone.phone.ReflectionCarLibTelemetryProvider;
-import com.pipphone.phone.CarLibUiBridge;
-
-import javax.swing.SwingUtilities;
 
 /**
- * Demo launcher for a car-integrated phone HUD.
- *
- * CarLib is used through reflection in {@link ReflectionCarLibTelemetryProvider}
- * so this sample can still run even when a CarLib runtime object is not provided.
+ * Optional desktop Swing demo. The Fabric mod uses {@link com.pipphone.client.PipphoneClientMod} instead.
  */
 public final class Main {
 
-    private Main() {}
+    private Main() {
+    }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            CarTelemetryProvider telemetry = new ReflectionCarLibTelemetryProvider(null);
-            CarPhoneController controller = new CarPhoneController(telemetry);
-            CarPhoneHud hud = new CarPhoneHud(controller);
-            hud.show();
-
-            // Optional CarLib UI API integration (auto-detected via reflection).
-            CarLibUiBridge uiBridge = new CarLibUiBridge();
-            uiBridge.registerPhoneHud(controller);
-        });
+        CarTelemetryAggregator telemetry = new CarTelemetryAggregator();
+        telemetry.refresh(null);
+        PipphoneCarProvider provider = new PipphoneCarProvider();
+        provider.update(telemetry);
+        CarPhoneController controller = new CarPhoneController(telemetry);
+        new CarPhoneHud(controller).show();
     }
 }
