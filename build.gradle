@@ -12,6 +12,14 @@ base {
 
 repositories {
     maven { url 'https://maven.fabricmc.net/' }
+    id 'java'
+    id 'application'
+}
+
+group = 'com.pipphone'
+version = '1.0.0'
+
+repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
 }
@@ -23,6 +31,11 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     modImplementation "com.github.bestgamer123-5:CarLib:${project.carlib_ref}"
+    implementation 'com.github.bestgamer123-5:CarLib:main-SNAPSHOT'
+}
+
+application {
+    mainClass = 'com.pipphone.Main'
 }
 
 java {
@@ -38,5 +51,6 @@ processResources {
         expand version: project.version,
                 minecraft_version: project.minecraft_version,
                 loader_version: project.loader_version
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
