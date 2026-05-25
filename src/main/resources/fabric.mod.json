@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "pipphone",
+  "version": "${version}",
+  "name": "PIPphone",
+  "description": "Phone HUD/UI mod scaffold for Minecraft 1.21.1 with CarLib integration hooks.",
+  "authors": ["PIPphone"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.pipphone.mod.PipphoneMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "~${minecraft_version}",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
