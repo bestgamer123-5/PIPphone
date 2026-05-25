@@ -60,10 +60,12 @@ public class PipphonePhoneScreen extends Screen {
                 "Fuel " + controller.fuel() + "%  Battery " + controller.battery() + "%",
                 this.width / 2, 74, 0xFFB3BCCC);
 
+        // Draw the interactive widgets first; afterwards we paint the app panel.
+        super.render(context, mouseX, mouseY, delta);
+
         renderAppPanel(context);
 
         context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(status), this.width / 2, this.height - 48, 0xFF8A94A8);
-        super.render(context, mouseX, mouseY, delta);
     }
 
     private void renderAppPanel(DrawContext context) {
