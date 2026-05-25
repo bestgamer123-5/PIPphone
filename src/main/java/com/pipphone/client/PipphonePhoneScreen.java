@@ -15,11 +15,12 @@ public class PipphonePhoneScreen extends Screen {
     public PipphonePhoneScreen(CarPhoneController controller) {
         super(Text.literal("PIPphone"));
         this.controller = controller;
+        PipphonePhoneUiState.INSTANCE.home();
     }
 
     @Override
     protected void init() {
-        int gridTop = 96;
+        int gridTop = 164;
         int buttonWidth = 72;
         int buttonHeight = 20;
         int gap = 6;
@@ -59,8 +60,25 @@ public class PipphonePhoneScreen extends Screen {
                 "Fuel " + controller.fuel() + "%  Battery " + controller.battery() + "%",
                 this.width / 2, 74, 0xFFB3BCCC);
 
+        renderAppPanel(context);
+
         context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(status), this.width / 2, this.height - 48, 0xFF8A94A8);
         super.render(context, mouseX, mouseY, delta);
+    }
+
+    private void renderAppPanel(DrawContext context) {
+        PipphonePhoneUiState uiState = PipphonePhoneUiState.INSTANCE;
+        int panelLeft = this.width / 2 - 110;
+        int panelTop = 96;
+        int panelRight = this.width / 2 + 110;
+        int panelBottom = 156;
+
+        context.fill(panelLeft, panelTop, panelRight, panelBottom, 0xC010141C);
+        context.drawCenteredTextWithShadow(this.textRenderer, Text.literal(uiState.currentApp()), this.width / 2, panelTop + 8, 0xFFFFFFFF);
+        context.drawText(this.textRenderer, Text.literal(uiState.line1()), panelLeft + 10, panelTop + 28, 0xFFE0E6F0, false);
+        context.drawText(this.textRenderer, Text.literal(uiState.line2()), panelLeft + 10, panelTop + 42, 0xFFE0E6F0, false);
+        context.drawText(this.textRenderer, Text.literal(uiState.line3()), panelLeft + 10, panelTop + 56, 0xFFE0E6F0, false);
+        context.drawText(this.textRenderer, Text.literal(uiState.line4()), panelLeft + 10, panelTop + 70, 0xFFE0E6F0, false);
     }
 
     @Override

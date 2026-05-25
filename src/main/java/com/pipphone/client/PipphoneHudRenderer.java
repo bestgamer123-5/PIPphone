@@ -26,7 +26,7 @@ public final class PipphoneHudRenderer {
         }
 
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client.options.hudHidden || client.player == null) {
+        if (client.options.hudHidden || client.player == null || client.currentScreen != null) {
             return;
         }
 

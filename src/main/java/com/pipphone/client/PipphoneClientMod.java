@@ -56,14 +56,14 @@ public class PipphoneClientMod implements ClientModInitializer {
 
     private static void configureApps(CarPhoneController controller) {
         controller.setApps(List.of(
-                new PhoneApp("Navigation", "NAV", () -> PipphoneClientActions.notify("Navigation")),
-                new PhoneApp("Radio", "RAD", () -> PipphoneClientActions.notify("Radio")),
-                new PhoneApp("Camera", "CAM", () -> PipphoneClientActions.notify("Camera")),
-                new PhoneApp("Messages", "MSG", () -> PipphoneClientActions.notify("Messages")),
-                new PhoneApp("Garage", "GAR", () -> PipphoneClientActions.notify("Garage")),
-                new PhoneApp("Weather", "WTH", () -> PipphoneClientActions.notify("Weather")),
-                new PhoneApp("Calls", "CALL", () -> PipphoneClientActions.notify("Calls")),
-                new PhoneApp("Settings", "SET", () -> PipphoneClientActions.notify("Settings"))
+                new PhoneApp("Navigation", "NAV", () -> PipphoneClientActions.openApp("Navigation")),
+                new PhoneApp("Radio", "RAD", () -> PipphoneClientActions.openApp("Radio")),
+                new PhoneApp("Camera", "CAM", () -> PipphoneClientActions.openApp("Camera")),
+                new PhoneApp("Messages", "MSG", () -> PipphoneClientActions.openApp("Messages")),
+                new PhoneApp("Garage", "GAR", () -> PipphoneClientActions.openApp("Garage")),
+                new PhoneApp("Weather", "WTH", () -> PipphoneClientActions.openApp("Weather")),
+                new PhoneApp("Calls", "CALL", () -> PipphoneClientActions.openApp("Calls")),
+                new PhoneApp("Settings", "SET", () -> PipphoneClientActions.openApp("Settings"))
         ));
     }
 }

@@ -50,3 +50,65 @@ java {
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
 }
+
+configurations {
+    remapper
+}
+
+dependencies {
+    remapper "net.fabricmc:tiny-remapper:0.10.4"
+    remapper "net.fabricmc:mapping-io:0.6.1"
+    remapper "org.ow2.asm:asm:9.7.1"
+    remapper "org.ow2.asm:asm-tree:9.7.1"
+    remapper "org.ow2.asm:asm-commons:9.7.1"
+}
+
+def fabricJarFile = layout.buildDirectory.file("libs/${project.archives_base_name}-${project.version}.jar")
+
+def remappedClasspath = files(sourceSets.main.runtimeClasspath, configurations.minecraftClientRuntimeLibraries)
+
+def yarnMappingsFile = configurations.mappings.singleFile
+
+def extractedMappingsFile = layout.buildDirectory.file('tmp/yarn-mappings.tiny')
+
+
+tasks.register('manualRemapJar', JavaExec) {
+    dependsOn(tasks.named('jar'))
+
+    classpath = configurations.remapper
+    mainClass.set('net.fabricmc.tinyremapper.Main')
+
+    doFirst {
+        def inputJar = tasks.named('jar').get().archiveFile.get().asFile
+        def outputJar = fabricJarFile.get().asFile
+        def mappingsFile = extractedMappingsFile.get().asFile
+
+        mappingsFile.parentFile.mkdirs()
+
+        new java.util.zip.ZipFile(yarnMappingsFile).withCloseable { zip ->
+            def entry = zip.getEntry('mappings/mappings.tiny')
+            mappingsFile.withOutputStream { out ->
+                zip.getInputStream(entry).transferTo(out)
+            }
+        }
+
+        outputJar.parentFile.mkdirs()
+        args = [
+                inputJar.absolutePath,
+                outputJar.absolutePath,
+                mappingsFile.absolutePath,
+                'named',
+                'intermediary'
+        ] + remappedClasspath.files.collect { it.absolutePath }
+    }
+
+    outputs.file(fabricJarFile)
+}
+
+tasks.named('remapJar') {
+    enabled = false
+}
+
+tasks.named('build') {
+    dependsOn(tasks.named('manualRemapJar'))
+}
